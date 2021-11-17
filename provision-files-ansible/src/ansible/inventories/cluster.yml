@@ -1,0 +1,25 @@
+---
+all:
+  hosts:
+    s0.infra:
+    s1.infra:
+    s2.infra:
+    s3.infra:
+    s4.infra:
+  children:
+    dns:
+      hosts:
+        s0.infra:
+    haproxy:
+      hosts:
+        s0.infra:
+    apache:
+      hosts:
+        s1.infra:
+        s2.infra:
+    mariadb:
+      hosts:
+        s3.infra:
+    nfs:
+      hosts:
+        s4.infra:

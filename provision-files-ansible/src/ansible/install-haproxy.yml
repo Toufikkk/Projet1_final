@@ -1,0 +1,13 @@
+---
+- hosts: haproxy
+  become: true
+  tasks:
+    - name: Install HAproxy
+      import_role:
+        name: geerlingguy.haproxy
+      vars:
+        haproxy_backend_servers:
+          - name: s1.infra
+            address: s1.infra:80
+          - name: s2.infra
+            address: s2.infra:80

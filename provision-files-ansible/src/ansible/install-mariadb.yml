@@ -1,0 +1,59 @@
+---
+- hosts: mariadb
+  tasks:
+    - name: Install MariaDB
+      apt:
+        name:
+          - mariadb-server
+          - mariadb-common
+          - python-mysqldb
+    - name: Setup Mariadb config file
+      template:
+        src: server.j2
+        dest: "{{ mariadb_config_file }}"
+        owner: "{{ mariadb_config_file_owner }}"
+        group: "{{ mariadb_config_file_group }}"
+        mode: 0644
+      vars:
+        - mariadb_config_file: /etc/mysql/my.cnf
+        - mariadb_config_file_owner: root
+        - mariadb_config_file_group: root
+        - mariadb_bind_address: "0.0.0.0"
+        - mariadb_port: 3306
+        - mariadb_slow_query_log_enabled: false
+        - mariadb_slow_query_time: "2"
+    - name: Enable Mariadb service
+      service:
+        name: "{{ mariadb_service }}"
+        state: restarted
+        enabled: yes
+      vars:
+        - mariadb_service: mysql
+    - name: Ensure Mariadb database are present
+      mysql_db:
+        name: "{{ item.name }}"
+        state: "{{ item.state | default('present') }}"
+      with_items:
+        - name: devopsdb
+        - name: devsecdb
+        - name: devsecopsdb
+    - name: Ensure Mariadb user are present
+      mysql_user:
+        name: "{{ item.name }}"
+        host: "{{ item.host | default('localhost') }}"
+        password: "{{ item.password }}"
+        priv: "{{ item.priv | default('*.*:USAGE') }}"
+        encrypted: "{{ item.encrypted | default('no') }}"
+      with_items:
+        - name: devops
+          password: devopspwd123
+          priv: "devopsdb.*:ALL"
+          host: "192.168.50.%"
+        - name: devsec
+          password: devsecpwd123
+          priv: "devsecdb.*:ALL"
+          host: "192.168.50.%"
+        - name: devsecops
+          password: devsecopspwd123
+          priv: "devsecopsdb.*:ALL"
+          host: "192.168.50.%"

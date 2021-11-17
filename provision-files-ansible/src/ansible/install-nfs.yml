@@ -1,0 +1,16 @@
+---
+- hosts: nfs
+  tasks:
+    ## TASK 1
+    - name: Create /data
+      file:
+        dest: /data
+        state: directory
+    
+    ## TASK 2
+    - name: Install NFS Server
+      import_role:
+        name: geerlingguy.nfs
+      vars:
+        nfs_exports:
+          - "/data s*.infra(rw,sync,no_root_squash,subtree_check)"

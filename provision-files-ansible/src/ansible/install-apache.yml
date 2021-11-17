@@ -1,0 +1,131 @@
+---
+# PLAYBOOK 1
+- hosts: apache
+  tasks:
+    ## TASK 1
+    - name: Install Apache2
+      import_role:
+        name: geerlingguy.apache
+      vars:
+        apache_create_vhosts: true
+        apache_vhosts:
+          - servername: devops.com
+            documentroot: /var/www/devops
+          - servername: devsec.com
+            documentroot: /var/www/devsec
+          - servername: devsecops.com
+            documentroot: /var/www/devsecops
+    ## TASK 2
+    - name: Install PHP
+      import_role:
+        name: geerlingguy.php
+      vars:
+        php_packages:
+          - php
+          - php-cli
+          - php-apcu
+          - php-mysql
+        php_default_version_debian: "7.3"
+
+
+# PLAYBOOK 2
+- hosts: apache
+  tasks:
+    ## TASK 1
+    - name: Install NFS Client
+      apt:
+        pkg: nfs-common
+    ## TASK 2
+    - name: Mount /var/www/ on nfs:/data
+      mount:
+        path: /var/www
+        src: s4.infra:/data
+        fstype: nfs
+        state: mounted
+    ## TASK 3
+    - name: Ensures that /var/www/html exists and is owned by www-data
+      file:
+        dest: /var/www/html
+        owner: www-data
+        group: www-data
+        state: directory
+    ## TASK 4
+    - name: Ensures that /var/www/html/index.html exists is owned by www-data
+      file:
+        dest: /var/www/html/index.html
+        owner: www-data
+        group: www-data
+        state: touch
+
+
+# PLAYBOOK 3
+- hosts: apache
+  serial: 1
+  tasks:
+    ## TASK 1
+    - name: Install MariaDB client
+      apt:
+        name:
+          - mariadb-common
+          - mariadb-client
+        state: present
+    ## TASK 2
+    - name: Install Wordpress
+      include_role:
+        name: oefenweb.wordpress
+      vars:
+        wordpress_installs:
+          - name: devops
+            dbname: devopsdb
+            dbuser: devops
+            dbpass: "devopspwd123"
+            dbhost: s3.infra
+            path: "/var/www/devops"
+            title: devops
+            admin_name: admin
+            admin_email: "admin@admin.adm"
+            admin_password: wordpressadminpwd123
+            url: http://devops.com
+            themes:
+              - name: twentytwelve
+                activate: true
+            plugins: []
+            users: {}
+            options: []
+            queries: []
+          - name: devsec
+            dbname: devsecdb
+            dbuser: devsec
+            dbpass: "devsecpwd123"
+            dbhost: s3.infra
+            path: "/var/www/devsec"
+            title: devsec
+            admin_name: admin
+            admin_email: "admin@admin.adm"
+            admin_password: wordpressadminpwd123
+            url: http://devsec.com
+            themes:
+              - name: twentythirteen
+                activate: true
+            plugins: []
+            users: {}
+            options: []
+            queries: []
+          - name: devsecops
+            dbname: devsecopsdb
+            dbuser: devsecops
+            dbpass: "devsecopspwd123"
+            dbhost: s3.infra
+            path: "/var/www/devsecops"
+            title: devsecops
+            admin_name: admin
+            admin_email: "admin@admin.adm"
+            admin_password: wordpressadminpwd123
+            url: http://devsecops.com
+            themes:
+              - name: twentyfourteen
+                activate: true
+            plugins: []
+            users: {}
+            options: []
+            queries: []
