@@ -1,10 +1,4 @@
-# ----------------------------- Project PART 1 -----------------------------
-
-## --- Recherches ---
-Pour commencer, phase de 'recherches' afin de déterminer quelles ressources nous allons utiliser pour la base de notre partie I du projet. Ces ressources inclues les fichiers et informations obtenues durant les UEs qui ont été suivies durant l'année.
-
-Pour cette partie, le cours de Ansible, accompagné de la documentation Ansible, sont nos références principales et c'est sur cette base que nous allons partir pour créer le Vagrantfile, ainsi que les fichiers qui vont suivre.
-
+# ----------------------------- Project 1 -----------------------------
 
 ## --- Process ---
 1. Initialiser avec `vagrant init`
